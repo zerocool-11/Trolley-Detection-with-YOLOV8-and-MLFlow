@@ -1,0 +1,31 @@
+# Use an official Python runtime as a parent image
+FROM ultralytics/ultralytics:latest
+
+RUN apt-get update && apt-get install -y \
+    make build-essential libssl-dev zlib1g-dev libbz2-dev \
+    libreadline-dev libsqlite3-dev wget curl llvm \
+    libncurses5-dev libncursesw5-dev xz-utils tk-dev \
+    libffi-dev liblzma-dev python-openssl git
+
+    
+# Install MLflow
+RUN pip install numpy==1.23.5 mlflow pyyaml Ipython
+RUN curl https://pyenv.run | bash
+
+# Set environment variables for pyenv
+ENV PATH="/root/.pyenv/bin:/root/.pyenv/shims:/root/.pyenv/versions/3.8.10/bin:$PATH"
+RUN echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+RUN echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+RUN echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
+
+
+
+
+# Expose the port that will be used for the MLflow model server
+EXPOSE 5001
+
+# Set environment variables
+ENV MLFLOW_MODEL_URI=""
+
+# Run the MLflow model server command
+ENTRYPOINT ["sh", "-c", "mlflow models serve -m $MLFLOW_MODEL_URI --host 0.0.0.0 --port 8080"]

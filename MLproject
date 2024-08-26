@@ -1,0 +1,9 @@
+name: yolov8-train-scratch
+docker_env:
+  image: yolo_train_scratch:v1
+  # network: host # This can be commented if the URI can be accessed externally.entry_points:
+  volumes: ["./app/datasets:/app/datasets","./app:/app"]
+  device: cuda
+entry_points:
+  main:
+    command: python /app/yolo_scratch_train.py
